@@ -178,6 +178,7 @@ else:
    pids = (os.getpid(), newpid)
    print("parent: %d, child: %d" % pids)
 host> ps aux | grep 14651
+host> journalctl -u ifork -f
 host> cat /etc/systemd/system/ifork.service
 [Service]
 Type=forking
@@ -188,9 +189,63 @@ WantedBy=multi-user.target
 host> systemctl start ifork
 host> systemctl status ifork
 time.sleep(5) -> parent
+host> journalctl -u ifork -f
 -->
 
 <!--
+host> cat /etc/systemd/system/network.service
+[Unit]
+Description=Network startup
+Wants=network.target
+Before=network.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+EnvironmentFile=/etc/conf.d/network
+ExecStart=/usr/bin/ip link set dev ${interface} up
+ExecStart=/usr/bin/ip addr add ${address}/${netmask} dev ${interface}
+ExecStart=/usr/bin/ip route add default via ${gateway} metric ${metric}
+
+ExecStop=/usr/bin/ip addr flush dev ${interface}
+ExecStop=/usr/bin/ip link set dev ${interface} down
+
+[Install]
+WantedBy=multi-user.target]
+
+host> cat /etc/conf.d/network
+interface=useless
+address=192.168.1.2
+netmask=24
+gateway=192.168.1.1
+metric=2048
+-->
+
+<!--
+host> cat /etc/systemd/system/network.service
+[Unit]
+Description=Network startup
+Wants=network.target
+Before=network.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+EnvironmentFile=/etc/conf.d/network@%i
+ExecStart=/usr/bin/ip link set dev %i up
+ExecStart=/usr/bin/ip addr add ${address}/${netmask} dev %i
+ExecStart=/usr/bin/ip route add default via ${gateway} metric ${metric}
+ExecStop=/usr/bin/ip addr flush dev %i
+ExecStop=/usr/bin/ip link set dev %i down
+
+[Install]
+WantedBy=multi-user.target
+
+host> cat /etc/conf.d/network@useless
+address=192.168.1.2
+netmask=24
+gateway=192.168.1.1
+metric=2048
 -->
 
 <!--
