@@ -15,7 +15,7 @@ s: Öffne Vortragsmonitor
 
 **Live-Präsentation:** http://turingmachine.ghcq.ml/systemd-ta/
 
-**Code:** http://github.com/Mic92/systemd-ta
+**Code:** https://github.com/Mic92/systemd-ta
 
 Terminalmitschnitt folgt
 
@@ -164,6 +164,51 @@ host> systemctl enable socat
 host> ls -la /etc/systemd/system/multi-user.target.wants/socat.service
 host> systemctl status socat
 host> sudo systemadm
+
+host>cat /usr/local/bin/ifork
+#!/usr/bin/python
+import os, time, syslog
+
+if os.fork() == 0:
+   print("A new child ", os.getpid())
+   while True:
+        syslog.syslog("Spam the journal")
+        time.sleep(1)
+else:
+   pids = (os.getpid(), newpid)
+   print("parent: %d, child: %d" % pids)
+host> ps aux | grep 14651
+host> cat /etc/systemd/system/ifork.service
+[Service]
+Type=forking
+ExecStart=/usr/local/bin/ifork
+
+[Install]
+WantedBy=multi-user.target
+host> systemctl start ifork
+host> systemctl status ifork
+time.sleep(5) -> parent
+-->
+
+<!--
+-->
+
+<!--
+host> debootstrap --variant=buildd --include=vim,locales,htop,git,curl,dnsutils,openssh-server testing ~/debian
+host> tree ~/debian
+host> systemd-nspawn -D ~/debian
+$ passwd
+$ dpkg-reconfigure locales
+host> systemd-nspawn -D ~/debian -b
+$ machinectl -a show debian
+$ machinectl login debian
+$ nsenter --target <PID> --mount --uts --ipc --net --pid /bin/bash --login
+$ apt-get install dbus  # logind
+$ # restart
+$ systemd-nspawn -D debian --network-veth
+$ systemd-nspawn -D debian --private-network
+$ ip a
+host> ip a
 -->
 
 <!--
@@ -173,18 +218,3 @@ host> systemd-nspawn -D ~/arch
 host> systemd-nspawn -D ~/arch -b
 -->
 
-<!--
-host> debootstrap --include=vim,locales,htop,git,curl,dnsutils testing ~/debian
-host> tree ~/debian
-host> systemd-nspawn -D ~/debian
-$ passwd
-host> systemd-nspawn -D ~/debian -b
-$ dpkg-reconfigure locales
-$ locale-gen en_US.UTF-8
-$ apt-get install dbus  # logind
-$ # restart
-$ systemd-nspawn -D debian --network-veth
-$ systemd-nspawn -D debian --private-network
-$ ip a
-host> ip a
--->

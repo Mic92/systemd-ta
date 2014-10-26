@@ -1,0 +1,6 @@
+[Service]
+Type=forking
+ExecStart=/usr/local/bin/ifork
+
+[Install]
+WantedBy=multi-user.target

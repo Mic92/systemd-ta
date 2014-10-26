@@ -1,0 +1,11 @@
+#!/usr/bin/python
+import os, time, syslog
+
+if os.fork() == 0:
+   print("A new child ", os.getpid())
+   while True:
+        syslog.syslog("Spam the journal")
+        time.sleep(1)
+else:
+   pids = (os.getpid(), newpid)
+   print("parent: %d, child: %d" % pids)
