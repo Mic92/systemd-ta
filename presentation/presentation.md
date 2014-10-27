@@ -177,6 +177,7 @@ if os.fork() == 0:
 else:
    pids = (os.getpid(), newpid)
    print("parent: %d, child: %d" % pids)
+   #time.sleep(3)
 host> ps aux | grep 14651
 host> journalctl -u ifork -f
 host> cat /etc/systemd/system/ifork.service
@@ -219,6 +220,8 @@ address=192.168.1.2
 netmask=24
 gateway=192.168.1.1
 metric=2048
+
+# Zeigen: 1 Befehl schlägt fehl
 -->
 
 <!--
@@ -249,6 +252,50 @@ metric=2048
 -->
 
 <!--
+Andere Type ->
+notify:
+  - /usr/lib/systemd/system/systemd-networkd.service
+  - capabilities
+  - ProtectSystem -> /usr | /etc read-only
+  - ProtectHome -> /home /run/usr ohne Zugriff
+  - SystemCallFilter
+  - PrivateTmp=
+dbus:
+  - /usr/lib/systemd/system/dnsmasq.service
+-->
+
+<!--
+Cgroup Limits
+cat /etc/systemd/system/forkbomb.service
+[Service]
+MemoryLimit=30M
+CPUQuota=20%
+OOMScoreAdjust=1000
+ExecStart=/usr/bin/perl -e "fork while 1"
+
+systemd-cgtop
+-->
+
+<!--
+$ journactl -u <UNIT>
+$ journactl -u <UNIT> -n 100
+$ journactl -u <UNIT> -f
+-->
+
+<!--
+$ systemctl
+$ systemctl --state failed
+-->
+
+<!--
+virtualbox
+nc -U /tmp/virtualbox-socket
+2mal runter: systemd.confirm_spawn=1
+3mal runter: systemd.unit=single
+4mal runter: debug systemd.log_target=console console=ttyS0
+-->
+
+<!--
 host> debootstrap --variant=buildd --include=vim,locales,htop,git,curl,dnsutils,openssh-server testing ~/debian
 host> tree ~/debian
 host> systemd-nspawn -D ~/debian
@@ -272,4 +319,3 @@ host> tree ~/arch
 host> systemd-nspawn -D ~/arch
 host> systemd-nspawn -D ~/arch -b
 -->
-

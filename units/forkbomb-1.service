@@ -1,0 +1,5 @@
+[Service]
+MemoryLimit=30M
+CPUQuota=20%
+OOMScoreAdjust=1000
+ExecStart=/usr/bin/perl -e "fork while 1"
