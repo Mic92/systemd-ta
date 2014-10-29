@@ -294,9 +294,31 @@ systemd-cgtop
 -->
 
 <!--
-$ journactl -u <UNIT>
-$ journactl -u <UNIT> -n 100
-$ journactl -u <UNIT> -f
+systemctl show mongodb
+systemctl set-property --runtime mongodb.service "MemoryLimit=100M"
+systemctl set-property mongodb "MemoryLimit=100M"
+systemctl show mongodb | grep Memory
+systemctl status mongodb
+systemd-delta
+systemd-delta /etc
+-->
+
+<!--
+- Automatisch Komprimiert und Rotiert (Ringbuffer)
+- Syslog, Stdout, dmesg, journal, remote
+- indiziert
+- Persistent in /var/log/journal sonst /run/log/journal
+$ journalctl --file
+$ journalctl -u <UNIT>
+$ journalctl -u <UNIT> -n 100
+$ journalctl -u <UNIT> -f
+$ systemd-cat -t "mydaemon"
+$ journalctl -o verbose -u sshd
+$ journalctl \_EXE=/usr/bin/sshd
+$ journalctl -o json -u sshd
+$ journalctl --list-boots
+$ journalctl -u sshd --since="-3 hours"
+$ journalctl -p crit
 -->
 
 <!--
