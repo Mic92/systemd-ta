@@ -3,6 +3,8 @@ Description=Socat Greeting Service
 Documentation=man:socat(1)
 
 [Service]
+User=nobody
+Group=nobody
 ExecStart=/usr/bin/socat TCP-LISTEN:8888,reuseaddr 'SYSTEM:echo Hello World'
 Restart=on-success
 

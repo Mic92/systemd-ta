@@ -164,7 +164,24 @@ host> systemctl enable socat
 host> ls -la /etc/systemd/system/multi-user.target.wants/socat.service
 host> systemctl status socat
 host> sudo systemadm
+-->
 
+<!--
+[Unit]
+Description=Socat Greeting Service
+Documentation=man:socat(1)
+
+[Service]
+ExecStart=/usr/bin/socat TCP-LISTEN:8888,reuseaddr 'SYSTEM:echo Hello World'
+Restart=on-success # or always
+User=nobody
+Group=nobody
+
+[Install]
+WantedBy=multi-user.target
+-->
+
+<!--
 host>cat /usr/local/bin/ifork
 #!/usr/bin/python
 import os, time, syslog
