@@ -1,0 +1,15 @@
+{
+  "name": "systemd-example",
+  "version": "1.0.0",
+  "description": "Systemd socket activation example",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mic92",
+  "license": "ISC",
+  "dependencies": {
+    "autoquit": "^0.1.6",
+    "systemd": "^0.2.6"
+  }
+}

@@ -1,0 +1,10 @@
+[Service]
+ExecStart=/usr/bin/node /home/tmux/nodejs/index.js
+User=tmux
+Group=tmux
+Restart=Always
+WorkingDirectory=/home/tmux/nodejs
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target
