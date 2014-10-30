@@ -1,0 +1,10 @@
+[Unit]
+Description=Run backup
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+#WakeSystem=true
+
+[Install]
+WantedBy=default.target

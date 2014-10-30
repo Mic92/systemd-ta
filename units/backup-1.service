@@ -1,0 +1,11 @@
+[Unit]
+Description=Perform backup
+RequiresMountsFor=/mnt/hdd/backup
+ConditionACPower=true
+
+[Service]
+Nice=19
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+
+ExecStart=/usr/bin/env rsync -rv '%h/git' '/mnt/hdd/backup'

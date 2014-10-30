@@ -1,0 +1,15 @@
+[Unit]
+Description=Run backup
+
+[Timer]
+OnCalendar=daily
+#OnCalendar=05:40
+
+#OnCalendar=Thu,Fri 2012-*-1,5 11:12:13
+#The above refers to 11:12:13 of the first or fifth day of any month of
+#the year 2012, given that it is a Thursday or Friday.
+
+# -> man systemd.time
+
+[Install]
+WantedBy=default.target

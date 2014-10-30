@@ -140,6 +140,8 @@ host> systemctl status socat.service
 sudo ss -tlnp | grep -C3 8888
 nc localhost 8888
 host> systemctl status socat.service
+vs.
+host> systemctl status socat
 -->
 
 <!--
@@ -335,6 +337,91 @@ nc -U /tmp/virtualbox-socket
 -->
 
 <!--
+host> pacstrap -d arch base vim git htop dnsutils
+host> tree ~/arch
+host> systemd-nspawn -D ~/arch
+host> systemd-nspawn -D ~/arch -b
+
+- systemd/user -> logind
+
+
+host> mkdir -p .config/systemd/user
+host> cat .config/systemd/user/backup.service
+[Unit]
+Description=Perform backup
+RequiresMountsFor=/mnt/hdd/backup
+ConditionACPower=true
+
+[Service]
+Nice=19
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+
+ExecStart=/usr/bin/env rsync -rv '%h/git' '/mnt/hdd/backup'
+host> systemctl --user start backup
+host> systemctl --user status backup
+host> cat .config/systemd/user/backup.timer
+[Unit]
+Description=Run backup
+
+[Timer]
+OnBootSec=10min
+OnUnitActiveSec=1 week
+
+[Install]
+WantedBy=default.target
+host> rm -r /mnt/hdd/backup/git
+host> systemctl --user start backup.timer
+host> systemctl --user status backup.timer
+host> systemctl --user status backup.service
+host> systemctl --user list-timers
+host> systemctl list-timers
+
+- Jobs can be easily started independently of their timers. This simplifies debugging.
+- Each job can be configured to run in a specific environment (see the systemd.exec(5) man page).
+- Jobs can be attached to cgroups.
+- Jobs can be set up to depend on other systemd units.
+- Jobs are logged in the systemd journal for easy debugging.
+-->
+
+<!--
+host> cat .config/systemd/user/backup.timer
+[Unit]
+Description=Run backup
+
+[Timer]
+OnCalendar=daily
+#OnCalendar=05:40
+
+#OnCalendar=Thu,Fri 2012-*-1,5 11:12:13
+#The above refers to 11:12:13 of the first or fifth day of any month of
+#the year 2012, given that it is a Thursday or Friday.
+
+# -> man systemd.time
+
+[Install]
+WantedBy=default.target]
+host> systemctl --user daemon-reload
+host> systemctl --user restart backup.timer
+host> systemctl --user status backup.timer
+-->
+
+<!--
+host> cat .config/systemd/user/backup.timer
+[Unit]
+Description=Run backup
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+#WakeSystem=true
+
+[Install]
+WantedBy=default.target
+-> /var/lib/systemd/timers
+-->
+
+<!--
 host> debootstrap --variant=buildd --include=vim,locales,htop,git,curl,dnsutils,openssh-server testing ~/debian
 host> tree ~/debian
 host> systemd-nspawn -D ~/debian
@@ -350,11 +437,4 @@ $ systemd-nspawn -D debian --network-veth
 $ systemd-nspawn -D debian --private-network
 $ ip a
 host> ip a
--->
-
-<!--
-host> pacstrap -d arch base vim git htop dnsutils
-host> tree ~/arch
-host> systemd-nspawn -D ~/arch
-host> systemd-nspawn -D ~/arch -b
 -->
