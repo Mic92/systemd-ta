@@ -11,7 +11,7 @@ s: Öffne Vortragsmonitor
 # Systemd
 ## System- und Servicemanager
 
-**Tmux:** ssh tmux@turingmachine.ghcq.ml
+**Tmux:** ssh tmux@turingmachine.ghcq.ml Passwort: tmux
 
 **Live-Präsentation:** http://turingmachine.ghcq.ml/systemd-ta/
 
@@ -437,4 +437,33 @@ $ systemd-nspawn -D debian --network-veth
 $ systemd-nspawn -D debian --private-network
 $ ip a
 host> ip a
+$ systemd-nspawn -D debian --link-journal=guest -b
+$ cat /etc/machine-id
+$ cd /var/log/journal/<machine-id>
+$ sudo journalctl --file='\*'
+-->
+
+<!--
+$ cat /etc/systemd/system/node-app.service
+[Service]
+ExecStart=/usr/bin/node /home/tmux/nodejs/index.js
+User=tmux
+Group=tmux
+Restart=Always
+WorkingDirectory=/home/tmux/nodejs
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target
+
+$ cat /etc/systemd/system/node-app.socket
+[Socket]
+ListenStream=3000
+
+[Install]
+WantedBy=sockets.target
+
+$ systemctl start node-app.socket
+$ curl localhost:3000
+$ systemctl status node-app.service
 -->
